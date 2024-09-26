@@ -4,7 +4,7 @@ const db = require('./db');
 const userRoutes = require('./routes/user-routes');
 
 (async () => {
-  await db.sync({ alter: true });
+  await db.sync({ force: true });
   console.log("The table for the User model was just (re)created!");
 })();
 
