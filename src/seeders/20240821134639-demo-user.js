@@ -5,7 +5,6 @@ require('dotenv').config();
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Хешируем пароль
     const hashedPassword = await bcrypt.hash(process.env.TEST_USER_PASSWORD, 10);
 
     await queryInterface.bulkInsert('Users', [{

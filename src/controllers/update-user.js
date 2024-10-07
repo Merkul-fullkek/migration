@@ -2,7 +2,7 @@ const UserService = require('../services/user-service');
 
 exports.updateUser = async (req, res) => {
   try {
-    const userId = req.params.userId; // Убедитесь, что id передается корректно
+    const userId = req.params.userId; 
     const userData = req.body;
     const user = await UserService.updateUser(userId, userData);
     
