@@ -1,5 +1,5 @@
 const basicAuth = require('express-basic-auth');
-const { Authenticate } = require('../models');
+const { Authenticate } = require('../src/models');
 const bcrypt = require('bcrypt');
 
 // Функция для получения пользователей из базы данных
