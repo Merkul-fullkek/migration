@@ -1,12 +1,12 @@
 const basicAuth = require('express-basic-auth');
-const { Authenticate } = require('../src/models');
-const bcrypt = require('bcrypt');
+const { Authenticate } = require('../models');
+const crypto = require('crypto');
 
 // Функция для получения пользователей из базы данных
 const getUsers = async () => {
   const authentications = await Authenticate.findAll({ attributes: ['login', 'password'] });
   return authentications.reduce((acc, auth) => {
-    acc[auth.login] = auth.password;
+    acc[auth.login] = Buffer.from(auth.password, 'hex'); // Предполагается, что пароли хранятся в виде хешей в hex-формате
     return acc;
   }, {});
 };
@@ -15,13 +15,14 @@ const getUsers = async () => {
 const auth = basicAuth({
   authorizer: async (username, password, cb) => {
     const users = await getUsers();
-    if (users[username]) {
-      const passwordMatch = await bcrypt.compare(password, users[username]);
-      if (passwordMatch) {
-        return cb(null, true);
-      }
-    }
-    return cb(null, false);
+    const userPasswordHash = users[username];
+    const passwordHash = crypto
+    .createHash('sha256')
+    .update(password)
+    .digest();
+    const passwordMatch = userPasswordHash && crypto.timingSafeEqual(userPasswordHash, passwordHash);
+    // убрал вложенность
+    return cb(null, passwordMatch);
   },
   authorizeAsync: true,
   unauthorizedResponse: (req) => {

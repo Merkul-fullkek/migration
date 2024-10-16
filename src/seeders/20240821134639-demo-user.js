@@ -1,28 +1,29 @@
 'use strict';
 
-const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 require('dotenv').config();
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const hashedPassword = await bcrypt.hash(process.env.TEST_USER_PASSWORD, 10);
+    const password = process.env.TEST_USER_PASSWORD;
+    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
-    await queryInterface.bulkInsert('Users', [{
+    const user = await queryInterface.sequelize.models.User.create({
       firstName: process.env.TEST_USER_FIRST_NAME,
       lastName: process.env.TEST_USER_LAST_NAME,
       middleName: process.env.TEST_USER_MIDDLE_NAME,
       status: process.env.TEST_USER_STATUS,
       createdAt: new Date(),
       updatedAt: new Date()
-    }], {});
+    });
 
-    await queryInterface.bulkInsert('Authentications', [{
+    await queryInterface.sequelize.models.Authentication.create({
       login: process.env.TEST_USER_LOGIN,
       password: hashedPassword,
-      UserId: 1, 
+      UserId: user.id, 
       createdAt: new Date(),
       updatedAt: new Date()
-    }], {});
+    });
   },
 
   down: async (queryInterface, Sequelize) => {
