@@ -9,8 +9,11 @@ class UserController {
   async getAllUsers(req, res, next) {
     try {
       const { status, sort } = req.query;
+      
+      if (!status) {
+      throw new ValidationError('Status is required.');
+      }
 
-      // Валидация статуса
       if (status && status !== 'active' && status !== 'inactive') {
         throw new ValidationError('Invalid status value. Must be "active" or "inactive".');
       }

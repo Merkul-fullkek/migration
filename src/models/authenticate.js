@@ -1,35 +1,38 @@
-'use strict';
-const { Model } = require('sequelize');
+'use strict'
+const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
   class Authenticate extends Model {
-    static associate(models) {
+    static associate (models) {
       Authenticate.belongsTo(models.User, {
         foreignKey: 'id',
-        as: 'User' 
-      });
+        as: 'User'
+      })
     }
   }
 
-  Authenticate.init({
-    login: {
-      type: DataTypes.STRING,
-      unique: true
-    },
-    password: DataTypes.STRING,
-    UserId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'User',
-        key: 'id'
+  Authenticate.init(
+    {
+      login: {
+        type: DataTypes.STRING,
+        unique: true
+      },
+      password: DataTypes.STRING,
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'User',
+          key: 'id'
+        }
       }
+    },
+    {
+      sequelize,
+      modelName: 'Authenticate',
+      tableName: 'authentications'
     }
-  }, {
-    sequelize,
-    modelName: 'Authenticate',
-    tableName: 'Authentications',
-  });
+  )
 
-  return Authenticate;
-};
+  return Authenticate
+}

@@ -1,37 +1,37 @@
-'use strict';
+'use strict'
 
-const crypto = require('crypto');
-require('dotenv').config();
+const crypto = require('crypto')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const password = process.env.TEST_USER_PASSWORD;
+    const password = process.env.TEST_USER_PASSWORD
     if (!password) {
-      throw new Error('TEST_USER_PASSWORD is not defined in .env file');
+      throw new Error('TEST_USER_PASSWORD is not defined in .env file')
     }
 
-    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+    const hashedPassword = crypto
+      .createHash('sha256')
+      .update(password)
+      .digest('hex')
 
-    await queryInterface.bulkInsert('Users', [{
-      firstName: process.env.TEST_USER_FIRST_NAME,
-      lastName: process.env.TEST_USER_LAST_NAME,
-      middleName: process.env.TEST_USER_MIDDLE_NAME,
+    await queryInterface.create('users', {
+      first_name: process.env.TEST_USER_FIRST_NAME,
+      last_name: process.env.TEST_USER_LAST_NAME,
+      middle_name: process.env.TEST_USER_MIDDLE_NAME,
       status: process.env.TEST_USER_STATUS,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }], {});
+      created_at: new Date(),
+      updated_at: new Date()
+    })
 
-    await queryInterface.bulkInsert('Authentications', [{
+    await queryInterface.create('authentications', {
       login: process.env.TEST_USER_LOGIN,
       password: hashedPassword,
-      UserId: 1, 
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }], {});
+      user_id: 1
+    })
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Users', null, {});
-    await queryInterface.bulkDelete('Authentications', null, {});
+    await queryInterface.destroy('users', null, {})
+    await queryInterface.destroy('authentications', null, {})
   }
-};
+}

@@ -5,21 +5,21 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.hasOne(models.Authenticate, {
-        foreignKey: 'UserId',
-        as: 'Authentications'
+        foreignKey: 'user_id',
+        as: 'authentications'
       });
     }
   }
 
   User.init({
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
-    middleName: DataTypes.STRING,
+    first_name: DataTypes.STRING,
+    last_name: DataTypes.STRING,
+    middle_name: DataTypes.STRING,
     status: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'User',
-    tableName: 'Users',
+    tableName: 'users',
   });
 
   return User;

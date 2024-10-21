@@ -1,15 +1,11 @@
-'use strict';
+'use strict'
 
-require('dotenv').config(); // Загрузка переменных окружения из .env файла
+const fs = require('fs')
+const path = require('path')
+const Sequelize = require('sequelize')
+const basename = path.basename(__filename)
+const nodeEnv = process.env.NODE_ENV || 'development'
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
-const nodeEnv = process.env.NODE_ENV || 'development';
-const db = {};
-
-// Использование переменных окружения для настройки Sequelize
 const config = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
@@ -17,33 +13,36 @@ const config = {
   host: process.env.DB_HOST,
   dialect: process.env.DB_DIALECT,
   port: process.env.DB_PORT
-};
-
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    console.log({NAME: model.name});
-    db[model.name] = model;
-  });
+const sequelize = config.useEnvVariable
+  ? new Sequelize(process.env[config.useEnvVariable], config)
+  : new Sequelize(config.database, config.username, config.password, config)
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
+const models = fs.readdirSync(__dirname).reduce((acc, file) => {
+  if (
+    file.indexOf('.') !== 0 &&
+    file !== basename &&
+    file.slice(-3) === '.js'
+  ) {
+    const model = require(path.join(__dirname, file))(
+      sequelize,
+      Sequelize.DataTypes
+    )
+    console.log({ NAME: model.name })
+    acc[model.name] = model
   }
-});
+  return acc
+}, {})
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+Object.keys(models).forEach(modelName => {
+  if (models[modelName].associate) {
+    models[modelName].associate(models)
+  }
+})
 
-module.exports = db;
+module.exports = {
+  sequelize,
+  Sequelize,
+  models
+}
