@@ -2,8 +2,6 @@ const { ValidationError, UserNotFoundError, InternalError, CustomError } = requi
 
 
 function errorHandler(err, req, res, next) {
-
-
   if (err instanceof CustomError) {
     return res.status(err.statusCode).json({ error: err.message });
   }
@@ -11,5 +9,8 @@ function errorHandler(err, req, res, next) {
   if (err instanceof UserNotFoundError) {
     return res.status(err.statusCode).json({ error: err.message });
   }
+
+  return res.status(500).json({ error: err.message });
 }
+
 module.exports = errorHandler;

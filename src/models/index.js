@@ -1,11 +1,23 @@
 'use strict';
 
+require('dotenv').config(); // Загрузка переменных окружения из .env файла
+
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const nodeEnv = process.env.NODE_ENV || 'development';
 const db = {};
+
+// Использование переменных окружения для настройки Sequelize
+const config = {
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  host: process.env.DB_HOST,
+  dialect: process.env.DB_DIALECT,
+  port: process.env.DB_PORT
+};
 
 let sequelize;
 if (config.use_env_variable) {

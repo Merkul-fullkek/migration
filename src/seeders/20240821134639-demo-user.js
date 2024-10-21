@@ -6,24 +6,28 @@ require('dotenv').config();
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const password = process.env.TEST_USER_PASSWORD;
+    if (!password) {
+      throw new Error('TEST_USER_PASSWORD is not defined in .env file');
+    }
+
     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
-    const user = await queryInterface.sequelize.models.User.create({
+    await queryInterface.bulkInsert('Users', [{
       firstName: process.env.TEST_USER_FIRST_NAME,
       lastName: process.env.TEST_USER_LAST_NAME,
       middleName: process.env.TEST_USER_MIDDLE_NAME,
       status: process.env.TEST_USER_STATUS,
       createdAt: new Date(),
       updatedAt: new Date()
-    });
+    }], {});
 
-    await queryInterface.sequelize.models.Authentication.create({
+    await queryInterface.bulkInsert('Authentications', [{
       login: process.env.TEST_USER_LOGIN,
       password: hashedPassword,
-      UserId: user.id, 
+      UserId: 1, 
       createdAt: new Date(),
       updatedAt: new Date()
-    });
+    }], {});
   },
 
   down: async (queryInterface, Sequelize) => {

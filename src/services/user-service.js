@@ -1,5 +1,7 @@
+const { User, Authenticate } = require('../models');
 const { UserNotFoundError, LoginExistsError } = require('../errors'); // Путь к вашим кастомным ошибкам
 const crypto = require('crypto');
+const PublicUser = require('../public-user');
 
 class UserService {
   async getAllUsers(status, sort) {
@@ -13,10 +15,13 @@ class UserService {
       const users = await User.findAll({
         where: whereFilter,
         order: orderAlph,
-        include: [{ model: Authenticate, as: 'Authentications' }]
+        include: [{ 
+          model: Authenticate, 
+          as: 'Authentications'
+         }]
       });
 
-      return users;
+      return users.map(user => new PublicUser(user));
   }
 
   async createUser(userData) {
@@ -44,13 +49,12 @@ class UserService {
           }
         },
         {
-          include: [{ model: Authenticate, as: 'Authentications' }] 
+          include: [{ model: Authenticate, as: 'Authentications'
+          }] 
         }
       );
 
-
-
-      return res.json(user);
+      return new PublicUser(user);
   }
 
   async updateUser(userId, userData) {
@@ -58,7 +62,8 @@ class UserService {
 
       const user = await User.findOne({
         where: { id: userId },
-        include: [{ model: Authenticate, as: 'Authentications' }]
+        include: [{ model: Authenticate, as: 'Authentications'
+         }]
       });
 
       if (!user) throw new UserNotFoundError();
@@ -74,19 +79,12 @@ class UserService {
           .digest('hex');
       }
       
-      
-      
       await user.save();
 
-      return res.json(user)
-    
-  }
+  return new PublicUser(user);
+}
 
   async deleteUser(userId) {
-    
-      const deletedAuthenticate = await Authenticate.destroy({
-        where: { UserId: userId }
-      });
 
       const deletedUser = await User.destroy({
         where: { id: userId }

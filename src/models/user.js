@@ -6,8 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       User.hasOne(models.Authenticate, {
         foreignKey: 'UserId',
-        as: 'Authentications', 
-         onDelete: 'CASCADE'
+        as: 'Authentications'
       });
     }
   }

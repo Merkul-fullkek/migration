@@ -1,9 +1,9 @@
-const { ValidationError, UserNotFoundError, LoginExistsError } = require('./errors'); // Путь к вашим кастомным ошибкам
-const { logger } = require('sequelize/lib/utils/logger'); // Путь к вашему логгеру
+const { ValidationError, UserNotFoundError, LoginExistsError } = require('../errors'); // Путь к вашим кастомным ошибкам
+
 
 class UserController {
   constructor(userService) {
-    this.#userService = userService;
+    this.userService = userService;
   }
 
   async getAllUsers(req, res, next) {
@@ -15,8 +15,8 @@ class UserController {
         throw new ValidationError('Invalid status value. Must be "active" or "inactive".');
       }
 
-      const users = await this.#userService.getAllUsers(status, sort);
-      res.json(users);
+      const users = await this.userService.getAllUsers(status, sort);
+      return res.json(users);
     } catch (error) {
       next(error);
     }
@@ -36,7 +36,7 @@ class UserController {
         throw new ValidationError('Invalid status value. Must be "active" or "inactive".');
       }
 
-      const user = await this.#userService.createUser({ firstName, lastName, middleName, status, login, password });
+      const user = await this.userService.createUser({ firstName, lastName, middleName, status, login, password });
       res.status(201).json(user);
     } catch (error) {
       next(error);
@@ -57,20 +57,20 @@ class UserController {
         throw new ValidationError('Invalid status value. Must be "active" or "inactive".');
       }
 
-      const updatedUser = await this.#userService.updateUser(userId, { firstName, status, login, password });
-      res.json(updatedUser);
+      const updatedUser = await this.userService.updateUser(userId, { firstName, status, login, password });
+      return res.json(updatedUser);
     } catch (error) {
-      next(error);
+        next(error);
     }
   }
 
   async deleteUser(req, res, next) {
     try {
       const userId = req.params.id;
-      await this.#userService.deleteUser(userId);
-      res.status(204).send();
+      await this.userService.deleteUser(userId);
+      return res.status(204).send();
     } catch (error) {
-      next(error);
+    next(error);
     }
   }
 }

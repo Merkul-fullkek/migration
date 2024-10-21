@@ -33,4 +33,4 @@ class LoginExistsError extends CustomError {
   }
 }
 
-module.exports = ValidationError, CustomError, UserNotFoundError, LoginExistsError;
+module.exports = {ValidationError, CustomError, UserNotFoundError, LoginExistsError};
